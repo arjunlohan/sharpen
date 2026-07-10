@@ -3,463 +3,489 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Growth review — signups &amp; churn by region</title>
+<title>Growth review — regional signups &amp; churn</title>
 <style>
-  :root {
-    --page: #f9f9f7;
-    --surface: #fcfcfb;
-    --ink: #0b0b0b;
-    --ink-2: #52514e;
-    --muted: #898781;
-    --grid: #e1e0d9;
-    --axis: #c3c2b7;
-    --border: rgba(11, 11, 11, 0.10);
-    --na: #2a78d6;
-    --eu: #e34948;
-    --apac: #1baf7a;
-    --good: #006300;
-    --bad: #d03b3b;
-    --bad-wash: rgba(208, 59, 59, 0.055);
+  /* ---------- tokens ---------- */
+  :root{
+    --page:#f9f9f7;
+    --surface:#fcfcfb;
+    --ink:#0b0b0b;
+    --ink-2:#52514e;
+    --muted:#898781;
+    --grid:#e1e0d9;
+    --axis:#c3c2b7;
+    --border:rgba(11,11,11,.10);
+    --cat-1:#2a78d6;          /* categorical slot 1 (NA)   */
+    --cat-2:#1baf7a;          /* categorical slot 2 (APAC) */
+    --critical:#d03b3b;       /* status: the slipping region's marks */
+    --critical-ink:#c23434;   /* status as text on light   */
+    --critical-tint:rgba(208,59,59,.09);
+    --good-ink:#006300;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --page: #0d0d0d;
-      --surface: #1a1a19;
-      --ink: #ffffff;
-      --ink-2: #c3c2b7;
-      --muted: #898781;
-      --grid: #2c2c2a;
-      --axis: #383835;
-      --border: rgba(255, 255, 255, 0.10);
-      --na: #3987e5;
-      --eu: #e66767;
-      --apac: #199e70;
-      --good: #0ca30c;
-      --bad: #e66767;
-      --bad-wash: rgba(230, 103, 103, 0.08);
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page:#0d0d0d;
+      --surface:#1a1a19;
+      --ink:#ffffff;
+      --ink-2:#c3c2b7;
+      --muted:#898781;
+      --grid:#2c2c2a;
+      --axis:#383835;
+      --border:rgba(255,255,255,.10);
+      --cat-1:#3987e5;
+      --cat-2:#199e70;
+      --critical:#d03b3b;
+      --critical-ink:#e66767;
+      --critical-tint:rgba(208,59,59,.16);
+      --good-ink:#0ca30c;
     }
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body { background: var(--page); }
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    color: var(--ink);
-    font-size: 18px;
-    line-height: 1.35;
-    padding: 18px 40px 14px;
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--page);
+    color:var(--ink);
+    font:400 16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap { max-width: 1760px; margin: 0 auto; }
+  .wrap{max-width:1400px;margin:0 auto;padding:clamp(14px,2.5vw,36px)}
 
   /* ---------- header ---------- */
-  header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 12px;
+  header.top{
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:8px 16px;flex-wrap:wrap;margin-bottom:clamp(12px,1.8vw,22px);
   }
-  header h1 { font-size: 29px; font-weight: 700; letter-spacing: -0.01em; }
-  header .period { font-size: 19px; color: var(--ink-2); }
+  h1{margin:0;font-size:clamp(1.1rem,1.8vw,1.5rem);font-weight:650;letter-spacing:-.01em}
+  .range{color:var(--muted);font-size:clamp(.85rem,1.2vw,1rem)}
 
   /* ---------- headline tiles ---------- */
-  .tiles {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.45fr;
-    gap: 18px;
-    margin-bottom: 16px;
+  .tiles{
+    display:grid;gap:clamp(10px,1.4vw,18px);
+    grid-template-columns:repeat(12,1fr);
+    margin-bottom:clamp(10px,1.4vw,18px);
   }
-  .tile {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 24px 13px;
+  .tile{
+    grid-column:span 3;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:clamp(14px,1.8vw,26px);
+    min-width:0;
   }
-  .tile-label { font-size: 17px; color: var(--ink-2); margin-bottom: 5px; }
-  .tile-value { font-size: 66px; font-weight: 650; line-height: 1.02; letter-spacing: -0.015em; }
-  .tile-delta { font-size: 20px; font-weight: 600; margin-top: 8px; }
-  .tile-delta.good { color: var(--good); }
-  .tile-delta.bad  { color: var(--bad); }
-  .tile-sub { font-size: 17px; color: var(--ink-2); margin-top: 5px; }
+  .tile .label{margin:0 0 4px;font-size:clamp(.88rem,1.15vw,1.05rem);font-weight:550;color:var(--ink-2)}
+  .tile .value{
+    font-size:clamp(2.4rem,4.6vw,4.1rem);
+    font-weight:650;line-height:1.04;letter-spacing:-.015em;
+  }
+  .tile .note{margin-top:4px;color:var(--muted);font-size:clamp(.8rem,1vw,.92rem)}
+  .delta{
+    display:inline-flex;align-items:baseline;gap:5px;
+    margin-top:8px;font-weight:600;
+    font-size:clamp(.92rem,1.25vw,1.1rem);
+  }
+  .delta.good{color:var(--good-ink)}
+  .delta.bad{color:var(--critical-ink)}
+  .delta.flat{color:var(--muted)}
 
-  .tile--alert {
-    border-left: 5px solid var(--bad);
-    background:
-      linear-gradient(var(--bad-wash), var(--bad-wash)),
-      var(--surface);
+  .tile.worst{
+    grid-column:span 6;
+    border-left:6px solid var(--critical);
+    background-image:linear-gradient(var(--critical-tint),var(--critical-tint));
   }
-  .tile--alert .tile-value .warn-glyph {
-    color: var(--bad);
-    font-size: 46px;
-    vertical-align: 10px;
-    margin-right: 4px;
+  .tile.worst .value .down-ico{
+    color:var(--critical-ink);
+    font-size:.52em;vertical-align:.14em;margin-left:.08em;
   }
-  .tile--alert .tile-when {
-    font-size: 25px;
-    font-weight: 650;
-    margin-top: 4px;
+  .tile.worst .facts{
+    list-style:none;margin:10px 0 0;padding:0;
+    display:grid;gap:6px;
+    font-size:clamp(1rem,1.55vw,1.32rem);line-height:1.35;
+  }
+  .tile.worst .facts .tri{color:var(--critical-ink);font-weight:700;margin-right:.35em}
+  .tile.worst .facts strong{font-weight:700}
+
+  @media (max-width:900px){
+    .tile{grid-column:span 6}
+    .tile.worst{grid-column:span 12;order:-1}
+  }
+  @media (max-width:560px){
+    .tile{grid-column:span 12}
   }
 
   /* ---------- chart cards ---------- */
-  .charts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-bottom: 16px;
+  .charts{
+    display:grid;gap:clamp(10px,1.4vw,18px);
+    grid-template-columns:3fr 2fr;
+    align-items:start;
   }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 15px 26px 10px;
+  @media (max-width:980px){ .charts{grid-template-columns:1fr} }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:clamp(14px,1.8vw,26px);
+    min-width:0;
   }
-  .card-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 6px;
-  }
-  .card-head h2 { font-size: 22px; font-weight: 650; }
-  .card-head .note { font-size: 16px; color: var(--muted); }
-  .card svg { display: block; width: 100%; height: auto; }
+  .card h2{margin:0;font-size:clamp(1.05rem,1.5vw,1.35rem);font-weight:650;letter-spacing:-.01em}
+  .card .sub{margin:2px 0 clamp(10px,1.2vw,16px);color:var(--muted);font-size:clamp(.82rem,1.05vw,.95rem)}
 
-  /* SVG text roles */
-  svg text { font-family: inherit; }
-  .tick     { font-size: 15px; fill: var(--muted); font-variant-numeric: tabular-nums; }
-  .month    { font-size: 16px; fill: var(--muted); }
-  .end-name { font-size: 17.5px; font-weight: 650; fill: var(--ink); }
-  .end-val  { font-size: 17.5px; font-weight: 500; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
-  .end-val.strong { font-weight: 700; fill: var(--ink); }
-  .end-warn { font-size: 16px; font-weight: 700; fill: var(--bad); }
-  .anno     { font-size: 15.5px; fill: var(--ink-2); }
-  .anno-warn { font-size: 15.5px; font-weight: 650; fill: var(--bad); }
+  #signups-chart svg{display:block;font-family:inherit}
+  #signups-chart .tick{fill:var(--muted);font-variant-numeric:tabular-nums}
+  #signups-chart .xlab{fill:var(--muted)}
+  #signups-chart .end-name{fill:var(--ink);font-weight:650}
+  #signups-chart .end-val{fill:var(--ink-2);font-variant-numeric:tabular-nums}
+  #signups-chart .anno{fill:var(--ink-2)}
+  #signups-chart .anno .tri{fill:var(--critical-ink);font-weight:700}
 
-  /* ---------- table ---------- */
-  .table-card { padding-bottom: 12px; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 17px;
+  /* ---------- churn table ---------- */
+  table.churn{
+    width:100%;border-collapse:collapse;
+    font-variant-numeric:tabular-nums;
   }
-  caption {
-    text-align: left;
-    font-size: 22px;
-    font-weight: 650;
-    padding-bottom: 8px;
+  table.churn th,table.churn td{
+    padding:clamp(9px,1.1vw,14px) clamp(4px,.7vw,10px);
+    text-align:right;border-bottom:1px solid var(--grid);
   }
-  th, td { padding: 5px 14px; }
-  thead th {
-    color: var(--ink-2);
-    font-weight: 600;
-    font-size: 16px;
-    text-align: right;
-    border-bottom: 1px solid var(--grid);
+  table.churn th[scope="row"],table.churn thead th:first-child{text-align:left}
+  table.churn thead th{
+    color:var(--muted);font-weight:550;
+    font-size:clamp(.78rem,1vw,.94rem);
   }
-  thead .group { text-align: center; border-bottom: none; padding-bottom: 2px; }
-  thead th.region-h { text-align: left; }
-  tbody td {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    border-bottom: 1px solid var(--grid);
+  table.churn tbody th,table.churn tbody td{
+    font-size:clamp(1rem,1.65vw,1.5rem);
   }
-  tbody tr:last-child td { border-bottom: none; }
-  td.region {
-    text-align: left;
-    font-weight: 650;
-    white-space: nowrap;
+  table.churn tbody tr:last-child th,
+  table.churn tbody tr:last-child td{border-bottom:0}
+  table.churn tbody th{font-weight:600;white-space:nowrap}
+  table.churn .key{
+    display:inline-block;width:10px;height:10px;border-radius:50%;
+    margin-right:8px;
   }
-  .swatch {
-    display: inline-block;
-    width: 11px; height: 11px;
-    border-radius: 50%;
-    margin-right: 9px;
-    vertical-align: 0;
+  table.churn td.warn{
+    background:var(--critical-tint);
+    font-weight:700;
   }
-  .sep { border-left: 1px solid var(--grid); }
-  td.delta { color: var(--ink-2); white-space: nowrap; }
-  td.delta.bad-strong { color: var(--bad); font-weight: 700; }
-  td.warn {
-    font-weight: 700;
-    background: var(--bad-wash);
-    white-space: nowrap;
+  table.churn td.warn .tri{color:var(--critical-ink);margin-right:.3em}
+  table.churn td.d-bad{color:var(--critical-ink);font-weight:700}
+  table.churn td.d-good{color:var(--good-ink);font-weight:600}
+  table.churn td.d-flat{color:var(--muted)}
+  .legend-note{
+    margin-top:clamp(8px,1vw,12px);
+    color:var(--muted);font-size:clamp(.8rem,1.05vw,.94rem);
   }
-  td.warn .warn-mark { color: var(--bad); font-weight: 700; margin-right: 4px; }
-  .footnote {
-    margin-top: 8px;
-    font-size: 15px;
-    color: var(--muted);
+  .legend-note .tri{color:var(--critical-ink);font-weight:700}
+
+  footer.foot{
+    margin-top:clamp(10px,1.4vw,18px);
+    color:var(--muted);font-size:clamp(.78rem,1vw,.88rem);
+  }
+
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
+  <header class="top">
     <h1>Growth review</h1>
-    <div class="period">Signups &amp; churn by region &middot; Jan&ndash;Apr</div>
+    <div class="range" id="range">Jan – Apr · churn warning at 4.0%</div>
   </header>
 
-  <!-- ============ headline row: the answer first ============ -->
-  <section class="tiles" aria-label="Headline figures">
-
+  <!-- headline row: the answer first -->
+  <section class="tiles" aria-label="Headline metrics">
     <div class="tile">
-      <div class="tile-label">Signups &middot; April</div>
-      <div class="tile-value">2,030</div>
-      <div class="tile-delta good">&#9650; +30 vs Mar (+1.5%)</div>
-      <div class="tile-sub">NA +47 and APAC +41 mask EU &minus;58</div>
+      <p class="label" id="tile-signups-label">Signups — this month</p>
+      <div class="value" id="tile-signups-value">–</div>
+      <div class="delta" id="tile-signups-delta"></div>
     </div>
 
     <div class="tile">
-      <div class="tile-label">Weighted churn &middot; April</div>
-      <div class="tile-value">3.6%</div>
-      <div class="tile-delta bad">&#9650; +0.1 pt vs Mar</div>
-      <div class="tile-sub">Up from 3.1% in Jan &mdash; the rise is all EU</div>
+      <p class="label" id="tile-churn-label">Weighted churn — this month</p>
+      <div class="value" id="tile-churn-value">–</div>
+      <div class="delta" id="tile-churn-delta"></div>
+      <p class="note">weighted by monthly signups</p>
     </div>
 
-    <div class="tile tile--alert">
-      <div class="tile-label">Region trending worst</div>
-      <div class="tile-value"><span class="warn-glyph">&#9888;</span>EU</div>
-      <div class="tile-when">Slipping since February</div>
-      <div class="tile-sub">Signups down 4 straight months (&minus;20%) &middot; churn 5.3%, above the 4% line since March</div>
+    <div class="tile worst">
+      <p class="label">Trending worst</p>
+      <div class="value" id="tile-worst-value">–</div>
+      <ul class="facts">
+        <li id="worst-fact-churn"></li>
+        <li id="worst-fact-signups"></li>
+      </ul>
     </div>
-
   </section>
 
-  <!-- ============ charts ============ -->
+  <!-- charts row -->
   <section class="charts">
+    <div class="card">
+      <h2>Signups by region</h2>
+      <p class="sub">monthly signups, Jan – Apr</p>
+      <div id="signups-chart"></div>
+      <div id="signups-table-sr" class="sr-only"></div>
+    </div>
 
-    <figure class="card">
-      <div class="card-head">
-        <h2>Signups by region</h2>
-        <span class="note">monthly signups</span>
-      </div>
-      <div id="chart-signups"></div>
-    </figure>
-
-    <figure class="card">
-      <div class="card-head">
-        <h2>Churn by region</h2>
-        <span class="note">monthly churn rate &middot; warning at 4%</span>
-      </div>
-      <div id="chart-churn"></div>
-    </figure>
-
+    <div class="card">
+      <h2>Churn by region</h2>
+      <p class="sub">monthly churn % · warning at ≥ 4.0%</p>
+      <div id="churn-table"></div>
+      <p class="legend-note" id="churn-note"><span class="tri" aria-hidden="true">▲</span> at or above the 4.0% churn threshold</p>
+    </div>
   </section>
 
-  <!-- ============ table view (every value, aligned) ============ -->
-  <section class="card table-card">
-    <table>
-      <caption>All the numbers</caption>
-      <thead>
-        <tr>
-          <th class="region-h" rowspan="2">Region</th>
-          <th class="group sep" colspan="4">Signups</th>
-          <th class="sep" rowspan="2">&Delta; Jan&rarr;Apr</th>
-          <th class="group sep" colspan="4">Churn %</th>
-        </tr>
-        <tr>
-          <th class="sep">Jan</th><th>Feb</th><th>Mar</th><th>Apr</th>
-          <th class="sep">Jan</th><th>Feb</th><th>Mar</th><th>Apr</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="region"><span class="swatch" style="background:var(--na)"></span>NA</td>
-          <td class="sep">812</td><td>876</td><td>901</td><td>948</td>
-          <td class="delta sep">+136&ensp;(+17%)</td>
-          <td class="sep">3.1</td><td>3.0</td><td>3.2</td><td>3.1</td>
-        </tr>
-        <tr>
-          <td class="region"><span class="swatch" style="background:var(--eu)"></span>EU</td>
-          <td class="sep">690</td><td>655</td><td>610</td><td>552</td>
-          <td class="delta bad-strong sep">&minus;138&ensp;(&minus;20%)</td>
-          <td class="sep">3.4</td><td>3.9</td>
-          <td class="warn"><span class="warn-mark">&#9888;</span>4.6</td>
-          <td class="warn"><span class="warn-mark">&#9888;</span>5.3</td>
-        </tr>
-        <tr>
-          <td class="region"><span class="swatch" style="background:var(--apac)"></span>APAC</td>
-          <td class="sep">410</td><td>445</td><td>489</td><td>530</td>
-          <td class="delta sep">+120&ensp;(+29%)</td>
-          <td class="sep">2.8</td><td>2.9</td><td>2.7</td><td>2.8</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="footnote">Weighted churn is signup-weighted across regions: 3.1% Jan &rarr; 3.3% Feb &rarr; 3.5% Mar &rarr; 3.6% Apr. &#9888; marks churn at or above the 4% warning threshold.</p>
-  </section>
+  <footer class="foot">
+    Weighted churn = per-region churn weighted by that month's signups. All figures from the inlined Jan–Apr dataset.
+  </footer>
 
 </div>
 
 <script>
-(function () {
+(function(){
   "use strict";
 
-  // ---------- inlined data ----------
-  var MONTHS = ["Jan", "Feb", "Mar", "Apr"];
-  var SIGNUPS = [
-    { name: "NA",   values: [812, 876, 901, 948], color: "var(--na)" },
-    { name: "EU",   values: [690, 655, 610, 552], color: "var(--eu)" },
-    { name: "APAC", values: [410, 445, 489, 530], color: "var(--apac)" }
-  ];
-  var CHURN = [
-    { name: "NA",   values: [3.1, 3.0, 3.2, 3.1], color: "var(--na)" },
-    { name: "EU",   values: [3.4, 3.9, 4.6, 5.3], color: "var(--eu)" },
-    { name: "APAC", values: [2.8, 2.9, 2.7, 2.8], color: "var(--apac)" }
-  ];
+  /* ---------- data (inlined verbatim) ---------- */
+  const CSV = `region,month,signups,churn_pct
+NA,Jan,812,3.1
+NA,Feb,876,3.0
+NA,Mar,901,3.2
+NA,Apr,948,3.1
+EU,Jan,690,3.4
+EU,Feb,655,3.9
+EU,Mar,610,4.6
+EU,Apr,552,5.3
+APAC,Jan,410,2.8
+APAC,Feb,445,2.9
+APAC,Mar,489,2.7
+APAC,Apr,530,2.8`;
 
-  var NS = "http://www.w3.org/2000/svg";
-  function el(name, attrs, text) {
-    var e = document.createElementNS(NS, name);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    if (text != null) e.textContent = text;
-    return e;
+  const THRESHOLD = 4.0;
+
+  const rows = CSV.trim().split("\n").slice(1).map(line => {
+    const [region, month, signups, churn] = line.split(",");
+    return { region, month, signups: +signups, churn: +churn };
+  });
+  const months  = [...new Set(rows.map(r => r.month))];
+  const regions = [...new Set(rows.map(r => r.region))];
+  const series  = {};   // region -> [{month, signups, churn}, ...] in month order
+  regions.forEach(rg => {
+    series[rg] = months.map(m => rows.find(r => r.region === rg && r.month === m));
+  });
+  const LAST = months.length - 1;
+
+  /* ---------- derived facts ---------- */
+  const fmt = n => n.toLocaleString("en-US");
+  const totalAt = i => regions.reduce((s, rg) => s + series[rg][i].signups, 0);
+  const weightedChurnAt = i => {
+    let num = 0, den = 0;
+    regions.forEach(rg => { num += series[rg][i].signups * series[rg][i].churn; den += series[rg][i].signups; });
+    return num / den;
+  };
+
+  const totalNow   = totalAt(LAST);
+  const totalPrev  = totalAt(LAST - 1);
+  const totalPct   = (totalNow - totalPrev) / totalPrev * 100;
+  const wcNow      = weightedChurnAt(LAST);
+  const wcPrev     = weightedChurnAt(LAST - 1);
+  const wcDelta    = wcNow - wcPrev;
+
+  // Worst region: latest churn at/above threshold wins (highest churn);
+  // fallback: steepest signup decline.
+  function worstRegion(){
+    const breached = regions.filter(rg => series[rg][LAST].churn >= THRESHOLD);
+    if (breached.length) return breached.sort((a,b) => series[b][LAST].churn - series[a][LAST].churn)[0];
+    return regions.slice().sort((a,b) =>
+      (series[a][LAST].signups - series[a][0].signups) - (series[b][LAST].signups - series[b][0].signups))[0];
+  }
+  const WORST = worstRegion();
+  const w = series[WORST];
+
+  const breachIdx   = w.findIndex(p => p.churn >= THRESHOLD);            // first month at/over 4%
+  const peakIdx     = w.reduce((pi,p,i) => p.signups > w[pi].signups ? i : pi, 0);
+  const declineIdx  = Math.min(peakIdx + 1, LAST);                        // first falling month
+  const dropPct     = (w[LAST].signups - w[peakIdx].signups) / w[peakIdx].signups * 100;
+
+  /* ---------- colors: worst region wears status red; others keep categorical slots ---------- */
+  const SLOTS = ["var(--cat-1)", "var(--cat-2)"];
+  const COLOR = {};
+  let slot = 0;
+  regions.forEach(rg => { COLOR[rg] = (rg === WORST) ? "var(--critical)" : SLOTS[slot++]; });
+
+  /* ---------- headline tiles ---------- */
+  const $ = id => document.getElementById(id);
+  const lastMonth = months[LAST], prevMonth = months[LAST - 1];
+
+  $("tile-signups-label").textContent = "Signups — " + lastMonth;
+  $("tile-signups-value").textContent = fmt(totalNow);
+  const sd = $("tile-signups-delta");
+  sd.className = "delta " + (totalPct > 0.05 ? "good" : totalPct < -0.05 ? "bad" : "flat");
+  sd.textContent = (totalPct >= 0 ? "▲ +" : "▼ ") + totalPct.toFixed(1) + "% vs " + prevMonth;
+
+  $("tile-churn-label").textContent = "Weighted churn — " + lastMonth;
+  $("tile-churn-value").textContent = wcNow.toFixed(1) + "%";
+  const cd = $("tile-churn-delta");
+  cd.className = "delta " + (wcDelta > 0.05 ? "bad" : wcDelta < -0.05 ? "good" : "flat");
+  cd.textContent = (wcDelta >= 0 ? "▲ +" : "▼ ") + wcDelta.toFixed(1) + " pp vs " + prevMonth;
+
+  $("tile-worst-value").innerHTML =
+    WORST + ' <span class="down-ico" aria-hidden="true">▼</span>';
+  $("worst-fact-churn").innerHTML =
+    '<span class="tri" aria-hidden="true">▲</span>Churn <strong>' + w[LAST].churn.toFixed(1) +
+    "%</strong> — above the " + THRESHOLD.toFixed(0) + "% line <strong>since " +
+    (breachIdx >= 0 ? months[breachIdx] : "—") + "</strong>";
+  $("worst-fact-signups").innerHTML =
+    '<span class="tri" aria-hidden="true">▼</span>Signups <strong>' +
+    dropPct.toFixed(0) + "%</strong> from " + months[peakIdx] +
+    " peak — <strong>falling since " + months[declineIdx] + "</strong>";
+
+  /* ---------- signups line chart (hand-rolled SVG, re-rendered on resize) ---------- */
+  const host = $("signups-chart");
+
+  function niceMax(v){
+    const step = Math.pow(10, Math.floor(Math.log10(v)));
+    return Math.ceil(v / step) * step;
   }
 
-  // Shared geometry: viewBox 820 x 440
-  var W = 820, H = 440;
-  var M = { top: 30, right: 140, bottom: 44, left: 64 };
-  var plotBottom = H - M.bottom;                 // 396
-  var lastX = W - M.right;                       // 680
-  var gridX0 = 56, gridX1 = 688, labelX = 692;
+  function renderChart(){
+    const wpx = Math.max(280, host.clientWidth);
+    if (!wpx) return;
+    const narrow = wpx < 520;
+    const H  = Math.round(Math.min(430, Math.max(250, wpx * 0.52)));
+    const fs  = narrow ? 12 : 13.5;   // tick font
+    const lfs = narrow ? 13 : 15;     // end-label font
+    const M = { l: narrow ? 40 : 50, r: narrow ? 82 : 104, t: 16, b: 34 };
+    const iw = wpx - M.l - M.r, ih = H - M.t - M.b;
 
-  function xAt(i) { return M.left + i * (lastX - M.left) / (MONTHS.length - 1); }
+    const maxVal = Math.max(...rows.map(r => r.signups));
+    const ymax = niceMax(maxVal);                 // 1000 for this data
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map(f => f * ymax);
 
-  function buildChart(opts) {
-    var svg = el("svg", {
-      viewBox: "0 0 " + W + " " + H,
-      role: "img",
-      "aria-label": opts.aria
+    const X = i => M.l + i * iw / LAST;
+    const Y = v => M.t + (1 - v / ymax) * ih;
+
+    let s = "";
+
+    // grid + y ticks
+    ticks.forEach(t => {
+      const y = Y(t);
+      s += `<line x1="${M.l}" y1="${y}" x2="${wpx - M.r}" y2="${y}" stroke="${t === 0 ? "var(--axis)" : "var(--grid)"}" stroke-width="1"/>`;
+      s += `<text class="tick" x="${M.l - 8}" y="${y + fs * 0.34}" text-anchor="end" font-size="${fs}">${fmt(t)}</text>`;
     });
-    var yMin = opts.domain[0], yMax = opts.domain[1];
-    function yAt(v) { return M.top + (yMax - v) * (plotBottom - M.top) / (yMax - yMin); }
-
-    // threshold wash (behind everything)
-    if (opts.threshold) {
-      svg.appendChild(el("rect", {
-        x: gridX0, y: M.top,
-        width: gridX1 - gridX0, height: yAt(opts.threshold.value) - M.top,
-        fill: "var(--bad-wash)"
-      }));
-    }
-
-    // gridlines + tick labels
-    opts.ticks.forEach(function (t) {
-      var y = yAt(t);
-      var isThreshold = opts.threshold && t === opts.threshold.value;
-      if (!isThreshold) {
-        svg.appendChild(el("line", {
-          x1: gridX0, x2: gridX1, y1: y, y2: y,
-          stroke: "var(--grid)", "stroke-width": 1
-        }));
-      }
-      svg.appendChild(el("text", {
-        x: gridX0 - 8, y: y + 5, "text-anchor": "end", "class": "tick"
-      }, opts.fmtTick(t)));
+    // x labels
+    months.forEach((m, i) => {
+      s += `<text class="xlab" x="${X(i)}" y="${H - 10}" text-anchor="middle" font-size="${fs}">${m}</text>`;
     });
 
-    // baseline
-    svg.appendChild(el("line", {
-      x1: gridX0, x2: gridX1, y1: plotBottom, y2: plotBottom,
-      stroke: "var(--axis)", "stroke-width": 1
-    }));
-
-    // threshold line + label (dashed = reference, not grid)
-    if (opts.threshold) {
-      var ty = yAt(opts.threshold.value);
-      svg.appendChild(el("line", {
-        x1: gridX0, x2: gridX1, y1: ty, y2: ty,
-        stroke: "var(--bad)", "stroke-width": 1.5, "stroke-dasharray": "7 5"
-      }));
-      svg.appendChild(el("text", {
-        x: gridX0 + 10, y: ty - 8, "class": "anno-warn"
-      }, opts.threshold.label));
-    }
-
-    // month labels
-    MONTHS.forEach(function (m, i) {
-      svg.appendChild(el("text", {
-        x: xAt(i), y: 420, "text-anchor": "middle", "class": "month"
-      }, m));
-    });
-
-    // series lines
-    opts.series.forEach(function (s) {
-      var pts = s.values.map(function (v, i) { return xAt(i) + "," + yAt(v); }).join(" ");
-      svg.appendChild(el("polyline", {
-        points: pts, fill: "none", stroke: s.color,
-        "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round"
-      }));
-    });
-
-    // annotations (between lines and dots so dots stay crisp)
-    (opts.annotations || []).forEach(function (a) {
-      svg.appendChild(el("text", {
-        x: a.x, y: a.y, "text-anchor": a.anchor || "start",
-        "class": a.cls || "anno"
-      }, a.text));
-    });
-
-    // dots with 2px surface ring
-    opts.series.forEach(function (s) {
-      s.values.forEach(function (v, i) {
-        svg.appendChild(el("circle", {
-          cx: xAt(i), cy: yAt(v), r: 5,
-          fill: s.color, stroke: "var(--surface)", "stroke-width": 2
-        }));
+    // draw non-worst series first so the worst line sits on top
+    const order = regions.slice().sort((a, b) => (a === WORST) - (b === WORST));
+    order.forEach(rg => {
+      const pts = series[rg].map((p, i) => [X(i), Y(p.signups)]);
+      const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+      const swidth = rg === WORST ? 3.5 : 2.5;
+      s += `<path d="${d}" fill="none" stroke="${COLOR[rg]}" stroke-width="${swidth}" stroke-linecap="round" stroke-linejoin="round"/>`;
+      // end dot with 2px surface ring
+      const [ex, ey] = pts[LAST];
+      s += `<circle cx="${ex}" cy="${ey}" r="5.5" fill="${COLOR[rg]}" stroke="var(--surface)" stroke-width="2"/>`;
+      // invisible hover targets with native tooltips (enhancement only — values are labeled/tabled)
+      series[rg].forEach((p, i) => {
+        s += `<circle cx="${X(i)}" cy="${Y(p.signups)}" r="12" fill="transparent"><title>${rg} · ${p.month}: ${fmt(p.signups)} signups</title></circle>`;
       });
     });
 
-    // direct end labels: name (ink) + value (secondary ink), never legend
-    opts.series.forEach(function (s) {
-      var y = yAt(s.values[s.values.length - 1]) + (s.endDy || 0) + 6;
-      var t = el("text", { x: labelX, y: y });
-      var name = el("tspan", { "class": "end-name" }, s.name);
-      var val = el("tspan", { "class": "end-val" + (s.endStrong ? " strong" : ""), dx: 6 }, s.endLabel);
-      t.appendChild(name);
-      t.appendChild(val);
-      if (s.endWarn) t.appendChild(el("tspan", { "class": "end-warn", dx: 5 }, "⚠"));
-      svg.appendChild(t);
+    // annotation on the worst line: since-when, right on the chart
+    if (!narrow && declineIdx > 0) {
+      const ax = (X(declineIdx) + X(Math.min(declineIdx + 1, LAST))) / 2;
+      const ay = (Y(w[declineIdx].signups) + Y(w[Math.min(declineIdx + 1, LAST)].signups)) / 2 + 22;
+      s += `<text class="anno" x="${ax}" y="${ay}" text-anchor="middle" font-size="${fs}">` +
+           `<tspan class="tri">▼</tspan> ${WORST} falling since ${months[declineIdx]}</text>`;
+    }
+
+    // direct end labels (no legend) with collision resolution + leader lines
+    const GAP = lfs + 7;
+    const labels = regions.map(rg => ({
+      rg, val: series[rg][LAST].signups, dotY: Y(series[rg][LAST].signups)
+    })).sort((a, b) => a.dotY - b.dotY);
+    labels.forEach(l => l.y = l.dotY);
+    for (let i = 1; i < labels.length; i++)
+      if (labels[i].y < labels[i - 1].y + GAP) labels[i].y = labels[i - 1].y + GAP;
+    const over = labels[labels.length - 1].y - (H - M.b - 4);
+    if (over > 0) labels.forEach(l => l.y -= over);
+    for (let i = labels.length - 2; i >= 0; i--)
+      if (labels[i].y > labels[i + 1].y - GAP) labels[i].y = labels[i + 1].y - GAP;
+
+    const endX = X(LAST);
+    labels.forEach(l => {
+      if (Math.abs(l.y - l.dotY) > 7)
+        s += `<line x1="${endX + 8}" y1="${l.dotY}" x2="${endX + 12}" y2="${l.y}" stroke="var(--muted)" stroke-width="1" opacity=".7"/>`;
+      s += `<text x="${endX + 14}" y="${l.y + lfs * 0.34}" font-size="${lfs}">` +
+           `<tspan class="end-name">${l.rg}</tspan>` +
+           `<tspan class="end-val" dx="5">${fmt(l.val)}</tspan></text>`;
     });
 
-    document.getElementById(opts.mount).appendChild(svg);
+    const aria = "Line chart of monthly signups by region, " + months[0] + " to " + lastMonth + ". " +
+      regions.map(rg => rg + " " + fmt(series[rg][0].signups) + " to " + fmt(series[rg][LAST].signups)).join("; ") + ".";
+    host.innerHTML =
+      `<svg viewBox="0 0 ${wpx} ${H}" width="${wpx}" height="${H}" role="img" aria-label="${aria}">` + s + "</svg>";
   }
 
-  // ---------- chart 1: signups ----------
-  buildChart({
-    mount: "chart-signups",
-    aria: "Line chart of monthly signups by region, January to April. NA rises from 812 to 948. APAC rises from 410 to 530. EU peaks at 690 in January, then falls every month to 552 in April, a 20 percent decline.",
-    domain: [300, 1000],
-    ticks: [400, 600, 800, 1000],
-    fmtTick: function (t) { return t.toLocaleString("en-US"); },
-    series: [
-      { name: "NA",   values: SIGNUPS[0].values, color: SIGNUPS[0].color, endLabel: "948" },
-      { name: "EU",   values: SIGNUPS[1].values, color: SIGNUPS[1].color, endLabel: "552", endDy: -10, endStrong: true },
-      { name: "APAC", values: SIGNUPS[2].values, color: SIGNUPS[2].color, endLabel: "530", endDy: 12 }
-    ],
-    annotations: [
-      { x: 373, y: 178, anchor: "middle", text: "EU: falling since Feb · −20% since Jan" }
-    ]
-  });
+  // screen-reader table twin for the chart
+  (function srTable(){
+    let t = "<table><caption>Monthly signups by region</caption><thead><tr><th scope=\"col\">Region</th>";
+    months.forEach(m => t += "<th scope=\"col\">" + m + "</th>");
+    t += "</tr></thead><tbody>";
+    regions.forEach(rg => {
+      t += "<tr><th scope=\"row\">" + rg + "</th>";
+      series[rg].forEach(p => t += "<td>" + fmt(p.signups) + "</td>");
+      t += "</tr>";
+    });
+    $("signups-table-sr").innerHTML = t + "</tbody></table>";
+  })();
 
-  // ---------- chart 2: churn ----------
-  buildChart({
-    mount: "chart-churn",
-    aria: "Line chart of monthly churn rate by region, January to April, with a warning threshold at 4 percent. NA holds near 3.1 percent and APAC near 2.8 percent. EU climbs from 3.4 to 5.3 percent, crossing the 4 percent warning threshold in March.",
-    domain: [2, 6],
-    ticks: [2, 3, 4, 5, 6],
-    fmtTick: function (t) { return t + "%"; },
-    threshold: { value: 4, label: "4% warning threshold" },
-    series: [
-      { name: "NA",   values: CHURN[0].values, color: CHURN[0].color, endLabel: "3.1%" },
-      { name: "EU",   values: CHURN[1].values, color: CHURN[1].color, endLabel: "5.3%", endStrong: true, endWarn: true },
-      { name: "APAC", values: CHURN[2].values, color: CHURN[2].color, endLabel: "2.8%" }
-    ],
-    annotations: [
-      { x: 492, y: 188, anchor: "start", text: "⚠ 4.6% — crossed 4% in Mar", cls: "anno-warn" }
-    ]
-  });
+  let lastW = 0;
+  function maybeRender(){
+    const cw = host.clientWidth;
+    if (Math.abs(cw - lastW) > 1) { lastW = cw; renderChart(); }
+  }
+  maybeRender();
+  if (window.ResizeObserver) new ResizeObserver(maybeRender).observe(host);
+  else window.addEventListener("resize", maybeRender);
+
+  /* ---------- churn table ---------- */
+  (function churnTable(){
+    let t = '<table class="churn">' +
+      '<caption class="sr-only">Monthly churn percent by region; values at or above ' +
+      THRESHOLD.toFixed(1) + ' percent are flagged</caption><thead><tr><th scope="col">Region</th>';
+    months.forEach(m => t += '<th scope="col">' + m + "</th>");
+    t += '<th scope="col">Δ ' + months[0] + "–" + lastMonth + "</th></tr></thead><tbody>";
+
+    regions.forEach(rg => {
+      t += '<tr><th scope="row"><span class="key" style="background:' + COLOR[rg] + '" aria-hidden="true"></span>' + rg + "</th>";
+      series[rg].forEach(p => {
+        if (p.churn >= THRESHOLD) {
+          t += '<td class="warn" aria-label="' + p.churn.toFixed(1) + ' percent — at or above the ' +
+               THRESHOLD.toFixed(0) + ' percent threshold"><span class="tri" aria-hidden="true">▲</span>' +
+               p.churn.toFixed(1) + "</td>";
+        } else {
+          t += "<td>" + p.churn.toFixed(1) + "</td>";
+        }
+      });
+      const d = series[rg][LAST].churn - series[rg][0].churn;
+      const cls = d > 0.05 ? "d-bad" : d < -0.05 ? "d-good" : "d-flat";
+      t += '<td class="' + cls + '">' + (d > 0 ? "+" : "") + d.toFixed(1) + "</td></tr>";
+    });
+    $("churn-table").innerHTML = t + "</tbody></table>";
+
+    if (breachIdx >= 0)
+      $("churn-note").innerHTML =
+        '<span class="tri" aria-hidden="true">▲</span> at or above the ' + THRESHOLD.toFixed(1) +
+        "% churn threshold — <strong>" + WORST + " crossed in " + months[breachIdx] + "</strong>";
+  })();
+
+  /* ---------- header range ---------- */
+  $("range").textContent = months[0] + " – " + lastMonth + " · churn warning at " + THRESHOLD.toFixed(1) + "%";
 })();
 </script>
 </body>

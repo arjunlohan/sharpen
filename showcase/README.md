@@ -28,7 +28,7 @@ python3 -m http.server 8000   # → http://localhost:8000
 ```
 showcase/
   index.html      the page (self-contained: inline CSS/JS, no dependencies)
-  experiments/    4 files: <nn>-<slug>--{rough,sharpened}.html, loaded as iframes
+  experiments/    5 files: <nn>-<slug>--{rough,sharpened}.html (plus the dashboard's kept v1), loaded as iframes
 ```
 
 The page dogfoods both skills: built from a sharpened prompt (it's in the footer), and

@@ -411,7 +411,8 @@ signups by region over time and one view for churn. Label lines directly
 instead of using a legend. Use tabular numbers wherever values align. Churn
 at or above 4% should read as a warning without relying on color alone.
 It's viewed from across a room: large type, no interactions required to get
-the story.
+the story. The TV is the primary context, but the layout must also hold at
+360px and 1280px — fluid grids, nothing clipped.
 
 <mark class="mF">Done when someone who has never seen this data can answer "which region is
 in trouble, and since when?" in one glance. Check that before you finish.</mark>
@@ -436,7 +437,9 @@ read as a warning without relying on color alone.
 
 <mark class="mO">Go beyond the basics: month-over-month deltas beside each headline stat, a
 last-updated stamp, direct end-of-line labels on every series.</mark> It's viewed
-from across a room: large type, no interactions required.
+from across a room: large type, no interactions required. The TV is the
+primary context, but the layout must also hold at 360px and 1280px — fluid
+grids, nothing clipped.
 
 Done when someone who has never seen this data can answer "which region is
 in trouble, and since when?" in one glance.
@@ -503,14 +506,15 @@ APAC,Apr,530,2.8">copy rough prompt + data</button></p>
           <div class="frame" data-h="1016"><iframe src="experiments/02-dashboard--rough.html" title="Dashboard built from the rough prompt" loading="lazy"></iframe></div>
         </div>
         <div>
-          <p class="frame-label"><span class="dot sharp-d"></span>sharpened prompt <a href="experiments/02-dashboard--sharpened.html" target="_blank" rel="noopener">open full size ↗</a></p>
-          <div class="frame" data-h="1016"><iframe src="experiments/02-dashboard--sharpened.html" title="Dashboard built from the sharpened prompt" loading="lazy"></iframe></div>
+          <p class="frame-label"><span class="dot sharp-d"></span>sharpened prompt · v2 <a href="experiments/02-dashboard--sharpened.html" target="_blank" rel="noopener">open full size ↗</a></p>
+          <div class="frame" data-h="837"><iframe src="experiments/02-dashboard--sharpened.html" title="Dashboard built from the sharpened prompt (v2)" loading="lazy"></iframe></div>
         </div>
       </div>
       <ul class="tells">
         <li>The data has a story — EU signups falling while churn climbs past 5% since February. The rough arm’s headline is a <em>positive</em> stat (total signups +6.2%) and the EU verdict is buried in tile four; the sharpened arm’s third tile <em>is</em> the verdict: “EU — slipping since February.”</li>
         <li>Semantics: the rough arm colors EU’s churn line in Europe’s brand green and marks no threshold; the sharpened arm draws the 4% warning band, annotates the crossing, and doesn’t rely on color alone.</li>
         <li>The rough arm is more interactive — a genuine point in its favor. The sharpened arm traded interaction away <em>on purpose</em>: its brief was a TV across the room, “no interactions required to get the story.” Prompts buy exactly what they ask for.</li>
+        <li>Full disclosure: the sharpened arm is a <em>second</em> run (July 10). v1 followed the same brief but its prompt had no resilience line, and it shipped a TV-only fixed grid that shattered at narrow widths — one sentence was added (it’s on the card above) and the arm re-run once. <a href="experiments/02-dashboard--sharpened-v1.html" target="_blank" rel="noopener">Compare v1 ↗</a></li>
       </ul>
       <details class="prompts"><summary>Show both prompts verbatim</summary>
         <p class="plabel">Rough</p><pre class="prompt rough">make a dashboard for this data, make it look good
@@ -647,6 +651,10 @@ const fitFrames=()=>{
   });
 };
 addEventListener('resize',fitFrames);
+if('ResizeObserver' in window){
+  const ro=new ResizeObserver(fitFrames);
+  document.querySelectorAll('.frames > div').forEach(el=>ro.observe(el));
+}
 fitFrames();
 </script>
 </body>
