@@ -1,6 +1,6 @@
 # Model notes — tuning the prompt to its target
 
-The same instructions land differently on different models. Detect the target, then adjust. Anchored on the current pair — **Claude Fable 5** and **Claude Opus 4.8** — with a symptom-keyed snippet library at the end. When the models change, re-verify against Anthropic's current model pages before trusting the specifics here.
+The same instructions land differently on different models. Detect the target, then adjust. Anchored on the current pair — **Claude Fable 5** and **Claude Opus 4.8** — with a symptom-keyed snippet library at the end. When the models change, re-verify the specifics here against the current model docs.
 
 ## Detect the target
 
@@ -63,7 +63,7 @@ Strong long-horizon agentic work, knowledge work, vision; a **literal, precise i
 
 ## Snippet library — keyed by symptom
 
-Paste-able clauses, lightly adapted from Anthropic's model guides. Use the one that matches the observed symptom; don't stack them preemptively.
+Paste-able clauses keyed by symptom. Use the one that matches what you're actually seeing; don't stack them preemptively.
 
 **S1 — Overplanning / narrating instead of doing** *(Fable 5, higher effort)*
 ```text

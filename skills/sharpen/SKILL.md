@@ -101,5 +101,3 @@ Deliver in this order, omitting sections that don't apply:
 | [rewriting.md](rewriting.md) | The full rewrite toolkit — structure, examples, XML, templates & variables, action steering, boundaries, verification, trimming |
 | [model-notes.md](model-notes.md) | Fable 5 vs Opus 4.8 behavioral differences, effort guidance, and a symptom-keyed library of paste-able prompt snippets |
 | [long-horizon.md](long-horizon.md) | Prompts as systems — done criteria, loops (`/goal`, `/loop`, `/schedule`), verification skills, memory & state, multi-session handoffs |
-
-*Distilled from Anthropic's prompting guides for Claude Fable 5, Claude Opus 4.8, and the cross-model best practices; Thariq Shihipar's "field guide to Claude Fable 5: finding your unknowns"; and the Claude Code team's guidance on loops. Opinionated defaults; verify against current docs when the models change.*

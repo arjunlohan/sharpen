@@ -40,9 +40,9 @@ The same instructions land differently on different models, so `sharpen` detects
 - **Claude Opus 4.8** — a literal instruction-follower: scope stated explicitly, effort as the primary lever, above-and-beyond requested rather than assumed, design directions specified or proposed-first.
 - **Other/unknown targets** — the cross-model fundamentals still apply unchanged.
 
-## Provenance
+## See also
 
-Distilled from Anthropic's prompting guides (Claude Fable 5, Claude Opus 4.8, and the cross-model best practices), the "field guide to Claude Fable 5: finding your unknowns," and the Claude Code team's guidance on loops. Sibling of [arjunlohan/finesse](https://github.com/arjunlohan/finesse) (design-engineering craft). Opinionated defaults — not affiliated with or endorsed by Anthropic.
+Sibling of [arjunlohan/finesse](https://github.com/arjunlohan/finesse) — the design-engineering counterpart: motion, micro-interactions, and interface polish.
 
 ## License
 
