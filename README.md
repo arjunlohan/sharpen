@@ -4,6 +4,8 @@
 
 Most people don't know how to prompt — and the better models get, the more output quality is bottlenecked by the prompt, not the model. `sharpen` teaches your assistant to take a rough request and make it dramatically better: **scout** the codebase before asking anything, **interview** you for only the answers that would change the architecture, **rewrite** the prompt with intent, structure, and verifiable done-criteria, and **tune** it to the model that will run it (Claude Fable 5 vs. Claude Opus 4.8 behave differently — the skill adjusts). Along the way it explains what changed and why, so you get better at prompting, not just this prompt.
 
+**See it work: [the showcase](https://arjunlohan.github.io/sharpen/)** — the same rough prompts sharpened for Claude Fable 5 vs. Claude Opus 4.8 side by side, plus live A/B pairs where the same model built the same request twice and only the prompt differed.
+
 ## Install
 
 ```sh

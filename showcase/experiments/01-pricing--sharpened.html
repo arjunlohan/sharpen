@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relay — Pricing</title>
+<style>
+  :root {
+    --bg: #0a0f14;
+    --panel: #0e151d;
+    --panel-raised: #111a24;
+    --line: #1d2937;
+    --line-soft: #16202b;
+    --text: #e8eef4;
+    --dim: #93a1b0;
+    --faint: #5d6b7a;
+    --green: #4ee39a;
+    --green-dim: #2fae72;
+    --green-ink: #052113;
+    --green-glow: rgba(78, 227, 154, 0.14);
+
+    --duration-fast: 150ms;
+    --duration-base: 200ms;
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(78, 227, 154, 0.05), transparent),
+      radial-gradient(rgba(148, 170, 190, 0.045) 1px, transparent 1px);
+    background-size: auto, 26px 26px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 72px 20px 64px;
+  }
+
+  /* ---------- Header ---------- */
+
+  .prompt {
+    font-size: 13px;
+    color: var(--faint);
+    margin-bottom: 20px;
+  }
+  .prompt .path { color: var(--green-dim); }
+  .prompt .cmd { color: var(--dim); }
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    margin-left: 2px;
+    vertical-align: -2px;
+    background: var(--green);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cursor { animation: blink 1.1s steps(2, start) infinite; }
+    @keyframes blink { to { visibility: hidden; } }
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+
+  .sub {
+    margin-top: 14px;
+    max-width: 52ch;
+    color: var(--dim);
+    font-size: 16px;
+    text-wrap: pretty;
+  }
+  .sub strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- Billing toggle ---------- */
+
+  .billing {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .toggle {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+  }
+
+  .toggle button {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--faint);
+    font: 600 14px/1 var(--mono);
+    padding: 12px 18px;
+    border-radius: 7px; /* concentric: 10 outer − 3 pad */
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-standard),
+                background-color var(--duration-fast) var(--ease-standard),
+                border-color var(--duration-fast) var(--ease-standard);
+  }
+  @media (hover: hover) {
+    .toggle button:hover:not([aria-pressed="true"]) { color: var(--dim); }
+  }
+  .toggle button[aria-pressed="true"] {
+    background: var(--panel-raised);
+    border-color: var(--line);
+    color: var(--text);
+  }
+  .toggle button .tick { color: var(--green); }
+
+  .toggle-note {
+    font-size: 13px;
+    color: var(--green);
+  }
+  .toggle-note::before { content: "// "; color: var(--faint); }
+
+  /* ---------- Plan grid ---------- */
+
+  .plans {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media (min-width: 960px) {
+    .plans {
+      grid-template-columns: 1fr 1.06fr 1fr;
+      grid-template-areas: "hobby pro team";
+      align-items: stretch;
+      gap: 24px;
+    }
+    .card-hobby { grid-area: hobby; }
+    .card-pro   { grid-area: pro; }
+    .card-team  { grid-area: team; }
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 24px 24px;
+  }
+
+  .card-pro {
+    background: var(--panel-raised);
+    border-color: rgba(78, 227, 154, 0.5);
+    box-shadow:
+      0 0 0 1px rgba(78, 227, 154, 0.28),
+      0 4px 24px -6px var(--green-glow),
+      0 24px 64px -24px rgba(78, 227, 154, 0.22);
+  }
+
+  .badge {
+    position: absolute;
+    top: -12px;
+    left: 24px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-ink);
+    background: var(--green);
+    border-radius: 6px;
+  }
+
+  .plan-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .plan-name::before { content: "$ "; color: var(--faint); font-weight: 400; }
+
+  .plan-tag {
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: var(--dim);
+    min-height: 2.6em; /* two lines reserved — keeps price rows aligned across cards */
+    text-wrap: pretty;
+  }
+
+  /* ---------- Price block (fixed-height: zero layout shift on toggle) ---------- */
+
+  .price {
+    margin-top: 18px;
+    height: 76px; /* amount row + billing note, reserved */
+  }
+  .amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    height: 46px;
+  }
+  .amount {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .amount .sign { font-size: 22px; font-weight: 600; color: var(--dim); vertical-align: 12px; margin-right: 1px; }
+  .per { font-size: 14px; color: var(--faint); }
+  .bill {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 1.5em; /* always one line, even when text changes */
+  }
+  .bill .save { color: var(--green); }
+
+  /* ---------- CTAs ---------- */
+
+  .cta {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px 16px;
+    min-height: 46px;
+    font: 700 14.5px/1.2 var(--mono);
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-standard),
+                border-color var(--duration-fast) var(--ease-standard),
+                color var(--duration-fast) var(--ease-standard),
+                transform var(--duration-fast) var(--ease-standard);
+  }
+  .cta:active { transform: scale(0.97); }
+
+  .cta-solid {
+    background: var(--green);
+    border: 1px solid var(--green);
+    color: var(--green-ink);
+  }
+  @media (hover: hover) {
+    .cta-solid:hover { background: #63eda9; border-color: #63eda9; }
+  }
+
+  .cta-ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--dim);
+  }
+  @media (hover: hover) {
+    .cta-ghost:hover { border-color: #2c3b4d; color: var(--text); background: rgba(148, 170, 190, 0.05); }
+  }
+
+  .cta-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--faint);
+    text-align: center;
+    height: 1.5em;
+  }
+  .cta-hint code { color: var(--green-dim); }
+
+  /* ---------- Feature lists ---------- */
+
+  .features {
+    list-style: none;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+    display: grid;
+    gap: 11px;
+    font-size: 14px;
+  }
+  .features li {
+    position: relative;
+    padding-left: 22px;
+    color: var(--dim);
+    text-wrap: pretty;
+  }
+  .features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 1px;
+    font-size: 12px;
+    color: var(--faint);
+  }
+  .card-pro .features li { color: var(--text); }
+  .card-pro .features li::before { content: "✓"; color: var(--green); }
+  .features li.lead { color: var(--faint); font-size: 13px; }
+  .features li.lead::before { content: "↳"; color: var(--faint); }
+  .card-pro .features li.lead { color: var(--dim); }
+  .features li .why { color: var(--faint); }
+  .card-pro .features li .why { color: var(--dim); }
+
+  /* ---------- Footer ---------- */
+
+  .fine {
+    margin-top: 36px;
+    font-size: 13px;
+    color: var(--faint);
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+  .fine code {
+    color: var(--dim);
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 12px;
+  }
+
+  /* ---------- Focus (keyboard) ---------- */
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--green);
+  }
+
+  /* ---------- Reduced motion ---------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
+  }
+
+  /* ---------- Small screens ---------- */
+
+  @media (max-width: 400px) {
+    .wrap { padding: 48px 14px 48px; }
+    .card { padding: 26px 18px 20px; }
+    .badge { left: 18px; }
+    .amount { font-size: 38px; }
+    .bill { font-size: 11.5px; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="prompt" aria-hidden="true"><span class="path">~/side-project</span> <span class="cmd">$ relay plans --upgrade</span><span class="cursor"></span></p>
+    <h1>One command to production.</h1>
+    <p class="sub">Start free. When the side project starts acting like a real one, <strong>Pro is $12 a month</strong> — unlimited projects, your own domains, and builds that skip the queue.</p>
+
+    <div class="billing">
+      <div class="toggle" role="group" aria-label="Billing period">
+        <button type="button" id="bill-monthly" aria-pressed="true">Monthly</button>
+        <button type="button" id="bill-annual" aria-pressed="false">Annual <span class="tick">−2 mo</span></button>
+      </div>
+      <p class="toggle-note">annual = 10 × monthly. two months on the house.</p>
+    </div>
+  </header>
+
+  <section class="plans" aria-label="Plans">
+
+    <!-- Pro first in source: featured plan reads first for screen readers and sits on top at 360px. -->
+    <article class="card card-pro" aria-labelledby="plan-pro">
+      <p class="badge">Recommended</p>
+      <h2 class="plan-name" id="plan-pro">pro</h2>
+      <p class="plan-tag">For developers who ship every day, not every quarter.</p>
+      <div class="price">
+        <div class="amount-row">
+          <span class="amount"><span class="sign">$</span><span data-amount="pro">12</span></span>
+          <span class="per">/mo</span>
+        </div>
+        <p class="bill" data-bill="pro" aria-live="polite">billed monthly · $144 over a year</p>
+      </div>
+      <button type="button" class="cta cta-solid">Upgrade to Pro →</button>
+      <p class="cta-hint">or run <code>relay upgrade pro</code></p>
+      <ul class="features">
+        <li class="lead">Everything in Hobby, plus:</li>
+        <li>Unlimited projects — <span class="why">stop rationing ideas to one repo</span></li>
+        <li>Custom domains with automatic TLS</li>
+        <li>Priority builds — <span class="why">your deploys skip the shared queue</span></li>
+        <li>Deploy previews on every branch and PR</li>
+      </ul>
+    </article>
+
+    <article class="card card-hobby" aria-labelledby="plan-hobby">
+      <h2 class="plan-name" id="plan-hobby">hobby</h2>
+      <p class="plan-tag">For the project you only touch on Sundays.</p>
+      <div class="price">
+        <div class="amount-row">
+          <span class="amount"><span class="sign">$</span><span data-amount="hobby">0</span></span>
+          <span class="per">/mo</span>
+        </div>
+        <p class="bill" data-bill="hobby" aria-live="polite">free forever · no card required</p>
+      </div>
+      <button type="button" class="cta cta-ghost">Start deploying free</button>
+      <p class="cta-hint"><code>npm i -g relay</code> and you're live</p>
+      <ul class="features">
+        <li>1 project</li>
+        <li>100 deploys per month — <span class="why">plenty until it isn't</span></li>
+        <li>Community support on Discord</li>
+      </ul>
+    </article>
+
+    <article class="card card-team" aria-labelledby="plan-team">
+      <h2 class="plan-name" id="plan-team">team</h2>
+      <p class="plan-tag">For small crews that need guardrails.</p>
+      <div class="price">
+        <div class="amount-row">
+          <span class="amount"><span class="sign">$</span><span data-amount="team">49</span></span>
+          <span class="per">/mo</span>
+        </div>
+        <p class="bill" data-bill="team" aria-live="polite">billed monthly · $588 over a year</p>
+      </div>
+      <button type="button" class="cta cta-ghost">Start a Team trial</button>
+      <p class="cta-hint">14 days, full features, no card</p>
+      <ul class="features">
+        <li class="lead">Everything in Pro, plus:</li>
+        <li>5 seats included</li>
+        <li>SSO via SAML or OIDC</li>
+        <li>Audit log of every deploy and rollback</li>
+      </ul>
+    </article>
+
+  </section>
+
+  <p class="fine">Prices in USD. Upgrade, downgrade, or cancel any time from the terminal with <code>relay billing</code> — your deploys keep running through the end of the billing period. Annual is exactly ten months' price. No coupon archaeology.</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var PLANS = {
+    hobby: {
+      monthly: { amount: "0",     bill: "free forever · no card required" },
+      annual:  { amount: "0",     bill: "free forever · no card required" }
+    },
+    pro: {
+      monthly: { amount: "12",    bill: "billed monthly · $144 over a year" },
+      annual:  { amount: "10",    bill: "billed yearly · $120 <span class=\"save\">save $24</span>" }
+    },
+    team: {
+      monthly: { amount: "49",    bill: "billed monthly · $588 over a year" },
+      annual:  { amount: "40.83", bill: "billed yearly · $490 <span class=\"save\">save $98</span>" }
+    }
+  };
+
+  var btnMonthly = document.getElementById("bill-monthly");
+  var btnAnnual = document.getElementById("bill-annual");
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var current = "monthly";
+
+  function setPeriod(period) {
+    if (period === current) return;
+    current = period;
+    btnMonthly.setAttribute("aria-pressed", String(period === "monthly"));
+    btnAnnual.setAttribute("aria-pressed", String(period === "annual"));
+
+    Object.keys(PLANS).forEach(function (key) {
+      var amountEl = document.querySelector('[data-amount="' + key + '"]');
+      var billEl = document.querySelector('[data-bill="' + key + '"]');
+      amountEl.textContent = PLANS[key][period].amount;
+      billEl.innerHTML = PLANS[key][period].bill;
+
+      if (!reduceMotion.matches && amountEl.animate) {
+        amountEl.animate(
+          [{ opacity: 0.25 }, { opacity: 1 }],
+          { duration: 150, easing: "cubic-bezier(0.05, 0.7, 0.1, 1)" }
+        );
+      }
+    });
+  }
+
+  btnMonthly.addEventListener("click", function () { setPeriod("monthly"); });
+  btnAnnual.addEventListener("click", function () { setPeriod("annual"); });
+})();
+</script>
+</body>
+</html>
