@@ -132,10 +132,12 @@ mark.mO{background:var(--pencil-bg);box-shadow:inset 0 -2px 0 var(--pencil);text
 @media (min-width:880px){.frames{grid-template-columns:1fr 1fr}}
 .frame-label{display:flex;align-items:center;gap:8px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px}
 .frame-label .dot{width:9px;height:9px;border-radius:50%}
+.frame-label a{margin-left:auto;letter-spacing:0;text-transform:none;color:var(--ink-2)}
 .dot.rough-d{background:var(--ink-3)}
 .dot.sharp-d{background:var(--pen)}
-.frame{border:1px solid var(--hairline);border-radius:var(--r-inner);overflow:hidden;background:#fff}
-.frame iframe{display:block;width:100%;border:0;height:var(--h,620px)}
+/* frames render a 1280px desktop viewport, scaled to fit the column (both arms identically) */
+.frame{position:relative;border:1px solid var(--hairline);border-radius:var(--r-inner);overflow:hidden;background:#fff}
+.frame iframe{position:absolute;top:0;left:0;width:1280px;border:0;transform-origin:top left}
 .tells{margin:18px 0 0;padding:0 0 0 2px;list-style:none;font-size:15px;color:var(--ink-2)}
 .tells li{margin:6px 0;padding-left:26px;position:relative}
 .tells li::before{content:"✎";position:absolute;left:0;top:0;color:var(--pen)}
@@ -466,19 +468,19 @@ APAC,Apr,530,2.8">copy rough prompt + data</button></p>
 <section id="proof">
   <div class="wrap">
     <div class="sec-head"><span class="sec-num">02</span><h2>Same model. Only the prompt changed.</h2></div>
-    <p class="sec-sub">Both sides of each pair were built by <strong>Claude Fable 5, same harness, same day</strong>, from the exact texts on the cards above — the rough prompt on the left, the sharpened one on the right. Live, interactive HTML. Judge for yourself.</p>
+    <p class="sec-sub">Both sides of each pair were built by <strong>Claude Fable 5, same harness, same day</strong>, from the exact texts on the cards above — the rough prompt on the left, the sharpened one on the right. Each frame renders a full <strong>1280-px desktop viewport, scaled to fit</strong> (both arms identically) — open any frame full size for the live, interactive page at native scale.</p>
 
     <article class="pair reveal">
       <h3>Pricing section</h3>
       <p class="sub">“make a pricing section for our saas, 3 tiers, make it pop” — versus the sharpened brief with a product, an audience, and a job to do.</p>
-      <div class="frames" style="--h:660px">
+      <div class="frames">
         <div>
-          <p class="frame-label"><span class="dot rough-d"></span>rough prompt</p>
-          <div class="frame"><iframe src="experiments/01-pricing--rough.html" title="Pricing section built from the rough prompt" loading="lazy"></iframe></div>
+          <p class="frame-label"><span class="dot rough-d"></span>rough prompt <a href="experiments/01-pricing--rough.html" target="_blank" rel="noopener">open full size ↗</a></p>
+          <div class="frame" data-h="1162"><iframe src="experiments/01-pricing--rough.html" title="Pricing section built from the rough prompt" loading="lazy"></iframe></div>
         </div>
         <div>
-          <p class="frame-label"><span class="dot sharp-d"></span>sharpened prompt</p>
-          <div class="frame"><iframe src="experiments/01-pricing--sharpened.html" title="Pricing section built from the sharpened prompt" loading="lazy"></iframe></div>
+          <p class="frame-label"><span class="dot sharp-d"></span>sharpened prompt <a href="experiments/01-pricing--sharpened.html" target="_blank" rel="noopener">open full size ↗</a></p>
+          <div class="frame" data-h="1162"><iframe src="experiments/01-pricing--sharpened.html" title="Pricing section built from the sharpened prompt" loading="lazy"></iframe></div>
         </div>
       </div>
       <ul class="tells">
@@ -495,20 +497,20 @@ APAC,Apr,530,2.8">copy rough prompt + data</button></p>
     <article class="pair reveal">
       <h3>Growth dashboard</h3>
       <p class="sub">Same 12 rows of CSV on both sides. One side was told what the data is <em>for</em>.</p>
-      <div class="frames" style="--h:720px">
+      <div class="frames">
         <div>
-          <p class="frame-label"><span class="dot rough-d"></span>rough prompt</p>
-          <div class="frame"><iframe src="experiments/02-dashboard--rough.html" title="Dashboard built from the rough prompt" loading="lazy"></iframe></div>
+          <p class="frame-label"><span class="dot rough-d"></span>rough prompt <a href="experiments/02-dashboard--rough.html" target="_blank" rel="noopener">open full size ↗</a></p>
+          <div class="frame" data-h="1016"><iframe src="experiments/02-dashboard--rough.html" title="Dashboard built from the rough prompt" loading="lazy"></iframe></div>
         </div>
         <div>
-          <p class="frame-label"><span class="dot sharp-d"></span>sharpened prompt</p>
-          <div class="frame"><iframe src="experiments/02-dashboard--sharpened.html" title="Dashboard built from the sharpened prompt" loading="lazy"></iframe></div>
+          <p class="frame-label"><span class="dot sharp-d"></span>sharpened prompt <a href="experiments/02-dashboard--sharpened.html" target="_blank" rel="noopener">open full size ↗</a></p>
+          <div class="frame" data-h="1016"><iframe src="experiments/02-dashboard--sharpened.html" title="Dashboard built from the sharpened prompt" loading="lazy"></iframe></div>
         </div>
       </div>
       <ul class="tells">
-        <li>The data has a story — EU signups falling while churn climbs past 5% since February. Time how long each side takes to tell you that.</li>
-        <li>“Make it look good” optimizes for chart variety; “spot the slipping region in ten seconds” optimizes for the answer — headline verdict first.</li>
-        <li>The sharpened arm was built for a TV across the room and for color-blind readers (the ≥4% churn warning can’t rely on color alone).</li>
+        <li>The data has a story — EU signups falling while churn climbs past 5% since February. The rough arm’s headline is a <em>positive</em> stat (total signups +6.2%) and the EU verdict is buried in tile four; the sharpened arm’s third tile <em>is</em> the verdict: “EU — slipping since February.”</li>
+        <li>Semantics: the rough arm colors EU’s churn line in Europe’s brand green and marks no threshold; the sharpened arm draws the 4% warning band, annotates the crossing, and doesn’t rely on color alone.</li>
+        <li>The rough arm is more interactive — a genuine point in its favor. The sharpened arm traded interaction away <em>on purpose</em>: its brief was a TV across the room, “no interactions required to get the story.” Prompts buy exactly what they ask for.</li>
       </ul>
       <details class="prompts"><summary>Show both prompts verbatim</summary>
         <p class="plabel">Rough</p><pre class="prompt rough">make a dashboard for this data, make it look good
@@ -634,6 +636,18 @@ if(matchMedia('(prefers-reduced-motion: no-preference)').matches && 'Intersectio
     if(el.getBoundingClientRect().top>innerHeight){el.classList.add('pre');io.observe(el);}
   });
 }
+/* scaled desktop viewports — every experiment frame renders at 1280px and scales to its
+   column, so both arms are judged at the width they were designed for */
+const fitFrames=()=>{
+  document.querySelectorAll('.frame').forEach(f=>{
+    const s=f.clientWidth/1280, h=+f.dataset.h||1100, ifr=f.querySelector('iframe');
+    f.style.height=Math.round(h*s)+'px';
+    ifr.style.height=h+'px';
+    ifr.style.transform='scale('+s+')';
+  });
+};
+addEventListener('resize',fitFrames);
+fitFrames();
 </script>
 </body>
 </html>

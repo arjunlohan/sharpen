@@ -6,8 +6,9 @@ The interview found what was missing; this file is how to encode it. Apply on to
 
 The two sentences most prompts are missing:
 
-- **The deliverable:** the artifact, its format, its audience. "A single self-contained HTML page for the exec review," not "something showing the data."
+- **The deliverable:** the artifact, its format, its audience — and its **viewing context** (viewport, embed, projection) when one dominates. "A single self-contained HTML page for the exec review," not "something showing the data."
 - **The done criterion:** verifiable, ideally deterministic. "All tests in `tests/auth` pass and `npm run lint` is clean," "the diff touches only `src/billing/`," "Lighthouse ≥ 90." A checkable "done" is what lets the model iterate instead of stopping at plausible — and what makes goal-based loops possible ([long-horizon.md](long-horizon.md)).
+- **A resilience floor for anything visual:** even when one context dominates ("built for a TV"), keep "holds at 360px and 1280px" in the done criteria. Artifacts get judged in places they weren't designed for — embedded, split-screened, screenshotted — and a prompt that optimizes hard for one viewport buys a layout that shatters in the others unless you say so.
 
 If you want above-and-beyond, **ask for it** — "include as many relevant features and interactions as possible; go beyond the basics" — rather than hoping the model infers ambition from a bare noun phrase.
 
