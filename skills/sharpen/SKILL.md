@@ -23,7 +23,7 @@ The examples below are often code-shaped because that's the densest case, but th
 | Best reference = source code | Best reference = the nearest finished artifact of the kind you want: last quarter's deck, a competitor's page, an email whose tone fits |
 | Verify by running it | Verify with a check a person can run: read it aloud, hand it to someone outside the context, walk a named checklist |
 
-One asymmetry worth naming: in a blank chat there's no codebase to scout, so the interview carries **more** weight, not less; what you ask the person is the only way to close the gap. Sharpening non-coding prompts is mostly steps 3 and 4 (diagnose the unknowns, interview well) plus the fundamentals.
+One asymmetry worth naming: in a blank chat there's no codebase to scout, so the interview carries **more** weight, not less; what you ask the person is the only way to close the gap. Sharpening non-coding prompts is mostly steps 3 and 4 (diagnose the unknowns, interview well) plus the fundamentals. And when that non-coding deliverable is prose, an email, a post, a brief, naming the anti-slop constraints is the highest-leverage rewrite move, because "make it good" returns generic slop: see [Prose deliverables](rewriting.md).
 
 ## The workflow
 
@@ -111,6 +111,6 @@ Deliver in this order, omitting sections that don't apply:
 | File | Read it for |
 | --- | --- |
 | [interviewing.md](interviewing.md) | The four unknowns in depth: blind-spot passes, brainstorm/prototype moves, interview scripts, reference-hunting, question etiquette |
-| [rewriting.md](rewriting.md) | The full rewrite toolkit: structure, examples, XML, templates & variables, action steering, boundaries, verification, trimming |
+| [rewriting.md](rewriting.md) | The full rewrite toolkit: structure, examples, XML, prose/anti-slop deliverables, templates & variables, action steering, boundaries, verification, trimming |
 | [model-notes.md](model-notes.md) | Fable 5 vs Opus 4.8 behavioral differences, effort guidance, and a symptom-keyed library of paste-able prompt snippets |
 | [long-horizon.md](long-horizon.md) | Prompts as systems: done criteria, loops (`/goal`, `/loop`, `/schedule`), verification skills, memory & state, multi-session handoffs |

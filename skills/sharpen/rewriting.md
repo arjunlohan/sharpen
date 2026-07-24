@@ -45,6 +45,28 @@ The most reliable lever for format, tone, and structure:
 - **Structured outputs / tool schemas: not prefills.** Prefilled assistant turns are gone on current models; use structured outputs for JSON, enum tool fields for classification, and retries for conformance.
 - For "respond directly without preamble," say exactly that, and strip any survivors in post-processing rather than fighting for the last 1%.
 
+## Prose deliverables: name what "good" means
+
+When the deliverable is writing (an email, a post, a brief, a summary, a doc) rather than code, the single highest-leverage instruction is telling the model what good writing *is*. "Make it professional / clean / engaging" returns industry-generic slop, because that register is the model's untuned default. Name the constraints instead:
+
+- **Ban the tells.** The recurring markers of machine-written text: throat-clearing openers ("Here's the thing"), binary contrasts ("it's not X, it's Y"), importance puffery ("marks a pivotal moment"), weasel attribution ("studies show"), colon reveals for fake drama, trailing "-ing" analysis ("highlighting the commitment to…"), summary-recap endings ("In conclusion"), and emoji-in-headings formatting slop. Listing the few a given piece is prone to beats a vague "sound human."
+- **Specify the positive register, not only the bans.** "Concrete numbers over adjectives (cut deploy time from 40 min to 4, not 'improved efficiency'), active voice, lead with the point, vary sentence shape." Positive instructions steer better than a wall of don'ts (see [SKILL.md](SKILL.md) fundamental 3).
+- **Give a voice reference.** A prior piece whose tone fits ("match the register of the attached investor update") carries more than any adjective. References beat descriptions for prose exactly as they do for code.
+- **Preserve voice when editing.** If the task is to edit the user's own draft, say "make the minimum effective edit and keep my voice," so the model removes the slop without flattening everything to uniform polish.
+
+A paste-able block for the common case:
+
+```text
+Write like a sharp human, not an assistant. No throat-clearing openers, no
+"it's not X, it's Y" contrasts, no "marks a pivotal moment" puffery, no
+"studies show" without a named source, no emoji in headings, no summary-recap
+ending. Prefer concrete numbers and names over adjectives, use active voice,
+one clear point per paragraph, and varied sentence length. End on the last
+concrete point, not a profound-sounding kicker.
+```
+
+For a dedicated edit-or-detect pass on an existing draft (rather than baking the constraints into a generation prompt), point the user at the [petergyang/no-ai-slop](https://github.com/petergyang/no-ai-slop) skill, which packages the full pattern catalog and its own editor/detector workflow.
+
 ## Templates & variables (API prompts)
 
 Split fixed from variable content; mark variables `{{like_this}}` and wrap them in XML tags. This buys consistency, testability (swap only the variable part), and versioning (the template is the artifact under version control). A sharpened API prompt should *be* a template: deliver it with its variables named.
